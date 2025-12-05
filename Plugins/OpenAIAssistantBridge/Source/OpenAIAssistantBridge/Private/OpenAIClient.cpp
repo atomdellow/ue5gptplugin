@@ -13,8 +13,8 @@
 // Adjust these paths as needed when the API changes.
 // ============================================================================
 
-// Text/Chat completions endpoint - uses the chat completions API
-// You may switch to /v1/responses or Assistants API as needed
+// Text/Chat completions endpoint - uses the Chat Completions API
+// For the Assistants API, you would need different endpoints: /v1/assistants, /v1/threads, /v1/runs
 static const FString TextEndpointPath = TEXT("/v1/chat/completions");
 
 // Audio transcription endpoint (Whisper API)
@@ -41,7 +41,10 @@ void FOpenAIClient::SendTextRequest(
 	const FOnOpenAITextResponse& CompletionCallback)
 {
 	// Build the full URL
-	// TODO: Adjust endpoint path as needed for your use case (e.g., Assistants API).
+	// Note: To use the Assistants API instead of Chat Completions, you would need to:
+	// 1. Create an assistant via /v1/assistants
+	// 2. Create a thread via /v1/threads
+	// 3. Add messages and run via /v1/threads/{id}/messages and /v1/threads/{id}/runs
 	FString Url = ApiBaseUrl + TextEndpointPath;
 
 	// Create HTTP request
@@ -51,9 +54,8 @@ void FOpenAIClient::SendTextRequest(
 	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *ApiKey));
 
-	// Build JSON request body
-	// TODO: Adjust JSON structure based on actual OpenAI API requirements.
-	// Current structure follows the Chat Completions API format.
+	// Build JSON request body following the Chat Completions API format
+	// See: https://platform.openai.com/docs/api-reference/chat/create
 	TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject);
 	RootObject->SetStringField(TEXT("model"), ModelOrAssistantId);
 
@@ -104,10 +106,9 @@ void FOpenAIClient::SendTextRequest(
 
 					if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 					{
-						// TODO: Adjust JSON parsing based on actual API response structure.
-						// Current structure follows Chat Completions API response format:
+						// Parse Chat Completions API response format:
 						// { "choices": [ { "message": { "content": "..." } } ] }
-						
+						// See: https://platform.openai.com/docs/api-reference/chat/object
 						const TArray<TSharedPtr<FJsonValue>>* ChoicesArray;
 						if (JsonObject->TryGetArrayField(TEXT("choices"), ChoicesArray) && ChoicesArray->Num() > 0)
 						{
@@ -258,8 +259,8 @@ void FOpenAIClient::TranscribeAudio(
 
 					if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 					{
-						// TODO: Verify response structure with OpenAI Whisper API docs.
-						// Expected: { "text": "..." }
+						// Parse Whisper API transcription response: { "text": "..." }
+						// See: https://platform.openai.com/docs/api-reference/audio/createTranscription
 						if (JsonObject->TryGetStringField(TEXT("text"), ResponseText))
 						{
 							bSuccess = true;
