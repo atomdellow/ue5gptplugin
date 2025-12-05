@@ -1,0 +1,25 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "OpenAI Assistant Bridge",
+	"Description": "A UE5.5 plugin that connects directly to the OpenAI API (Assistants / Responses) without any intermediate server.",
+	"Category": "AI",
+	"CreatedBy": "Your Name",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": true,
+	"Installed": false,
+	"EngineVersion": "5.5.0",
+	"Modules": [
+		{
+			"Name": "OpenAIAssistantBridge",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
